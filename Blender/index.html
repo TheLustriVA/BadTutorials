@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Guide: Blender & Gemini CLI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .slide {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .slide.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .code-block {
+            position: relative;
+            background-color: #1e293b; /* slate-800 */
+            color: #e2e8f0; /* slate-200 */
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+            overflow-x: auto;
+        }
+        .code-block pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background-color: #334155; /* slate-700 */
+            color: #cbd5e1; /* slate-300 */
+            border: none;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+        .copy-btn:hover {
+            background-color: #475569; /* slate-600 */
+        }
+        .progress-bar {
+            height: 4px;
+            background-color: #e5e7eb; /* gray-200 */
+            width: 100%;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .progress-bar-inner {
+            height: 100%;
+            background-color: #4f46e5; /* indigo-600 */
+            width: 0;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <div class="container mx-auto max-w-4xl p-4 sm:p-6 lg:p-8">
+        <header class="text-center mb-6">
+            <h1 class="text-3xl sm:text-4xl font-bold text-slate-900">Creative Automation Guide</h1>
+            <p class="text-lg text-slate-600 mt-2">Generating Blender Cross-Sections with the Gemini CLI</p>
+        </header>
+
+        <main class="bg-white rounded-xl shadow-lg p-6 sm:p-8">
+            <div id="slides-container">
+                <!-- Slide 1: Introduction -->
+                <div class="slide">
+                    <h2 class="text-2xl font-bold mb-4">Section 1: The Modern Creative's Toolkit</h2>
+                    <p class="mb-4">The convergence of AI and creative software has unlocked unprecedented opportunities. This guide provides an exhaustive look at a powerful, modern workflow: using Google's Gemini CLI to generate sophisticated Python scripts for Blender.</p>
+                    <p>We'll detail the process of creating a script to produce a horizontal cross-section of a complex 3D model, using a boarding school as a practical example.</p>
+                </div>
+
+                <!-- Slide 2: Gemini CLI Overview -->
+                <div class="slide">
+                    <h2 class="text-2xl font-bold mb-4">1.1 Gemini CLI: Your Conversational Co-Developer</h2>
+                    <p class="mb-2">The Gemini CLI is not just a utility but an <strong>agentic partner</strong>. It uses a "Reason and Act" (ReAct) loop to understand your intent, break down tasks, and execute them.</p>
+                    <ul class="list-disc list-inside space-y-2 mb-4 pl-4 text-slate-700">
+                        <li><strong>Reason:</strong> Analyzes the prompt and formulates a plan.</li>
+                        <li><strong>Act:</strong> Executes steps using tools like file readers or shell commands.</li>
+                        <li><strong>Observe:</strong> Processes the results and refines its plan.</li>
+                    </ul>
+                    <p>A key feature is its massive 1 million token context window, allowing it to understand entire codebases, not just snippets. This is crucial for iterative development.</p>
+                </div>
+                
+                <!-- Slide 3: Installing Gemini CLI -->
+                <div class="slide">
+                    <h2 class="text-2xl font-bold mb-4">Installation and Access</h2>
+                    <p class="mb-2">Getting started is straightforward. You'll need Node.js (v18+) installed. Then, run this command in your terminal:</p>
+                    <div class="code-block">
+                        <button class="copy-btn">Copy</button>
+                        <pre><code>npm install -g @google/gemini-cli</code></pre>
+                    </div>
+                    <p>By authenticating with a Google account, you get a free Gemini Code Assist license with generous usage limits, making it highly accessible for personal projects.</p>
+                </div>
+
+                <!-- Slide 4: Blender's Scripting Environment -->
+                <div class="slide">
+                    <h2 class="text-2xl font-bold mb-4">1.2 A Primer on Blender's `bpy` API</h2>
+                    <p class="mb-2">A foundational understanding of Blender's Python API (`bpy`) is essential. It revolves around three core components:</p>
+                    <ul class="list-disc list-inside space-y-2 mb-4 pl-4 text-slate-700">
+                        <li><code>bpy.data</code>: The library of the blend-file. Contains all persistent data like objects, meshes, and materials.</li>
+                        <li><code>bpy.context</code>: Represents the user's current state in the UI (active object, selected objects, etc.).</li>
+                        <li><code>bpy.ops</code>: Python functions that correspond to UI operators (e.g., clicking a button).</li>
+                    </ul>
+                    <p>For robust scripts, it's best practice to manipulate data directly with <code>bpy.data</code> rather than relying on <code>bpy.context</code> or <code>bpy.ops</code>.</p>
+                </div>
+
+                <!-- Slide 5: Project Scaffolding -->
+                <div class="slide">
+                    <h2 class="text-2xl font-bold mb-4">Section 2: Project Scaffolding</h2>
+                    <p class="mb-4">Before writing code, we must prepare our assets and, most importantly, engineer the context that will guide the AI. This proactive approach dramatically improves the quality of the generated code.</p>
+                    <p>This involves preparing the 3D model and meticulously crafting a <code>GEMINI.md</code> file to provide the AI with project-specific instructions and API knowledge.</p>
+                </div>
+
+                <!-- Slide 6: Engineering GEMINI.md -->
+                <div class="slide">
+                    <h2 class="text-2xl font-bold mb-4">2.2 Engineering the `GEMINI.md` Context File</h2>
+                    <p class="mb-2">This is the most critical step. This file acts as a briefing document for the AI. Here’s a breakdown of what to include:</p>
+                    <h3 class="text-lg font-semibold mt-4 mb-2">High-Level Goal:</h3>
+                    <div class="code-block">
+                        <button class="copy-btn">Copy</button>
+                        <pre><code># Project Goal: Blender Cross-Section Script Generator
+
+You are an expert Blender Python (`bpy`) programmer. Your primary goal is to assist in writing a robust, interactive, and reusable script to create horizontal cross-sections of 3D models.</code></pre>
+                    </div>
+                     <h3 class="text-lg font-semibold mt-4 mb-2">Technical Guidelines:</h3>
+                    <div class="code-block">
+                        <button class="copy-btn">Copy</button>
+                        <pre><code>## Technical Guidelines
+
+- **Prioritize `bmesh`:** For any mesh creation or manipulation, you MUST prioritize using the `bmesh` module over `bpy.ops`.
+- **UI Development:** Use the standard `bpy.types.Panel` and `bpy.types.Operator` classes.</code></pre>
+                    </div>
+                </div>
+                
+                <!-- Slide 7: GEMINI.md API Reference -->
+                <div class="slide">
+                    <h2 class="text-2xl font-bold mb-4">`GEMINI.md`: API Reference & Standards</h2>
+                    <p class="mb-2">Injecting key API documentation directly into the context prevents the AI from using outdated functions.</p>
+                    <h3 class="text-lg font-semibold mt-4 mb-2">Key API Reference: Bisect Tool</h3>
+                    <div class="code-block">
+                        <button class="copy-btn">Copy</button>
+                        <pre><code>**`bmesh.ops.bisect_plane(bm, geom, plane_co, plane_no, ...)`**
+- `bm`: The BMesh to operate on.
+- `plane_co`: A `mathutils.Vector` for a point on the cutting plane.
+- `plane_no`: A `mathutils.Vector` for the normal of the cutting plane.
+...and other parameters like `use_fill`, `clear_inner`, `clear_outer`.</code></pre>
+                    </div>
+                    <h3 class="text-lg font-semibold mt-4 mb-2">Coding Standards:</h3>
+                     <div class="code-block">
+                        <button class="copy-btn">Copy</button>
+                        <pre><code>## Coding Standards & Final Output
+
+- All generated Python code must be fully compliant with the PEP 8 style guide.
+- Add meaningful comments.
+- The final script should be able to export vertex coordinates to a JSON file.</code></pre>
+                    </div>
+                </div>
+
+                <!-- Slide 8: Directory Structure -->
+                <div class="slide">
+                    <h2 class="text-2xl font-bold mb-4">2.3 Structuring the Project Directory</h2>
+                    <p class="mb-2">A well-organized directory helps the Gemini agent understand your project. A logical structure provides implicit context.</p>
+                    <div class="code-block">
+                        <button class="copy-btn">Copy</button>
+                        <pre><code>/boarding_school_project/
+|
+|-- building.blend
+|-- GEMINI.md
+|-- /scripts/
+|   |-- cross_section_generator.py</code></pre>
+                    </div>
+                    <p>This structure clearly separates the data asset (`building.blend`), the AI's instructions (`GEMINI.md`), and the code output (`scripts/`).</p>
+                </div>
+
+                <!-- Slide 9: The Core Workflow -->
+                <div class="slide">
+                    <h2 class="text-2xl font-bold mb-4">Section 3: The Core Workflow</h2>
+                    <p class="mb-2">This phase is a multi-turn dialogue where the initial concept is progressively refined into a robust tool. Start by launching Gemini from your project's root directory:</p>
+                    <div class="code-block">
+                        <button class="copy-btn">Copy</button>
+                        <pre><code>cd /path/to/boarding_school_project
+gemini</code></pre>
+                    </div>
+                    <p class="mt-4">Your first prompt should be clear, concise, and reference the context you've provided in <code>GEMINI.md</code>.</p>
+                </div>
+
+                <!-- Slide 10: Iteration 1: Baseline Script -->
+                <div class="slide">
+                    <h2 class="text-2xl font-bold mb-4">Turn 1: The `bpy.ops` Baseline</h2>
+                    <p class="mb-2">Gemini's first attempt might use <code>bpy.ops</code>, which is common but less robust. This serves as a functional starting point.</p>
+                    <div class="code-block">
+                        <button class="copy-btn">Copy</button>
+                        <pre><code class="language-python">import bpy
+
+# Select the target object
+obj = bpy.data.objects.get("Main_Building")
+if obj:
+    bpy.context.view_layer.objects.active = obj
+    obj.select_set(True)
+
+    # Switch to Edit Mode
+    bpy.ops.object.mode_set(mode='EDIT')
+
+    # Perform the bisect operation
+    bpy.ops.mesh.bisect(
+        plane_co=(0, 0, 10.0),
+        plane_no=(0, 0, 1),
+        use_fill=True,
+        clear_outer=True
+    )
+
+    # Return to Object Mode
+    bpy.ops.object.mode_set(mode='OBJECT')
+else:
+    print("Error: Object 'Main_Building' not found.")</code></pre>
+                    </div>
+                    <p>This script works, but its reliance on context makes it brittle. The next step is to refine it.</p>
+                </div>
+
+                <!-- Slide 11: Iteration 2: Evolving to bmesh -->
+                <div class="slide">
+                    <h2 class="text-2xl font-bold mb-4">Turn 2: Evolving to `bmesh`</h2>
+                    <p class="mb-2">Guide the AI toward the preferred <code>bmesh</code> module for a more professional and reliable script. This approach manipulates mesh data directly.</p>
+                    <div class="code-block">
+                        <button class="copy-btn">Copy</button>
+                        <pre><code class="language-python">import bpy
+import bmesh
+from mathutils import Vector
+
+obj = bpy.data.objects.get("Main_Building")
+if obj and obj.type == 'MESH':
+    mesh = obj.data
+
+    # Create a new BMesh instance
+    bm = bmesh.new()
+    bm.from_mesh(mesh)
+
+    # Perform the bisect operation
+    bmesh.ops.bisect_plane(
+        bm,
+        geom=bm.verts[:] + bm.edges[:] + bm.faces[:],
+        plane_co=Vector((0, 0, 10.0)),
+        plane_no=Vector((0, 0, 1)),
+        use_fill=True,
+        clear_outer=True
+    )
+
+    # Write the modified data back
+    bm.to_mesh(mesh)
+    mesh.update()
+
+    # Free the BMesh instance
+    bm.free()
+else:
+    print("Error: Mesh object 'Main_Building' not found.")</code></pre>
+                    </div>
+                </div>
+
+                <!-- Slide 12: Iteration 3 & 4: UI and Extracting Slice -->
+                <div class="slide">
+                    <h2 class="text-2xl font-bold mb-4">Turns 3 & 4: UI and Extracting the Slice</h2>
+                    <p class="mb-4">The next logical steps involve making the tool interactive and changing its core function.</p>
+                    <ul class="list-disc list-inside space-y-2 mb-4 pl-4 text-slate-700">
+                        <li><strong>Turn 3 - Build a UI:</strong> Prompt Gemini to wrap the logic in a Blender Operator (<code>bpy.types.Operator</code>) and create a UI Panel (<code>bpy.types.Panel</code>) with properties for dynamic control.</li>
+                        <li><strong>Turn 4 - Extract the Slice:</strong> Refine the goal. Instead of modifying the original object, prompt Gemini to create a brand new mesh object representing *only* the 2D slice geometry.</li>
+                    </ul>
+                     <p>This iterative process turns a simple script into a powerful, user-friendly tool.</p>
+                </div>
+                
+                <!-- Slide 13: Iteration 5: Exporting to JSON -->
+                <div class="slide">
+                    <h2 class="text-2xl font-bold mb-4">Turn 5: Exporting to JSON</h2>
+                    <p class="mb-2">The final functional step is to extract the geometric data into a structured, machine-readable format like JSON. This opens the door for further analysis or use in other applications.</p>
+                    <p class="mb-4">Your prompt should be:</p>
+                    <blockquote class="border-l-4 border-indigo-500 pl-4 italic text-slate-600">
+                        "After the 'Cross_Section_Slice' object is created, please add a function to the operator that exports its geometry data to a file named 'cross_section.json'. The JSON file must have 'vertices' and 'edges' keys."
+                    </blockquote>
+                    <p class="mt-4">Gemini will add the necessary Python code to import the <code>json</code> library, iterate through the mesh data, and write the file.</p>
+                </div>
+                
+                <!-- Slide 14: Implementation & Debugging -->
+                <div class="slide">
+                    <h2 class="text-2xl font-bold mb-4">Section 4: Implementation and Debugging</h2>
+                    <p class="mb-2">Generating code is only half the battle. You need to run it in Blender and fix any errors. A highly efficient method is the <strong>AI Debugging Loop</strong>:</p>
+                    <ol class="list-decimal list-inside space-y-2 mb-4 pl-4 text-slate-700">
+                        <li><strong>Run</strong> the script in Blender and trigger the error.</li>
+                        <li><strong>Get Error:</strong> Copy the entire error message from Blender's system console.</li>
+                        <li><strong>Feed Error to AI:</strong> Paste the traceback into the Gemini CLI and ask for a fix.</li>
+                        <li><strong>Get Fix:</strong> Gemini will analyze the error and provide corrected code.</li>
+                        <li><strong>Run Again:</strong> Repeat the process until the script works.</li>
+                    </ol>
+                </div>
+                
+                <!-- Slide 15: Remote Debugging with VS Code -->
+                <div class="slide">
+                    <h2 class="text-2xl font-bold mb-4">4.2 Remote Debugging with VS Code</h2>
+                    <p class="mb-2">For subtle logical errors, an interactive debugger is indispensable. You can connect VS Code to Blender for professional-grade debugging.</p>
+                    <p class="mb-4">This involves installing the <code>debugpy</code> library in Blender's Python environment and configuring VS Code to attach to Blender's debug server.</p>
+                    <p class="mb-2">Add this configuration to your <code>launch.json</code> file in VS Code:</p>
+                    <div class="code-block">
+                        <button class="copy-btn">Copy</button>
+                        <pre><code class="language-json">{
+    "name": "Python: Attach to Blender",
+    "type": "python",
+    "request": "attach",
+    "connect": {
+        "host": "localhost",
+        "port": 5678
+    },
+    "pathMappings": [
+        {
+            "localRoot": "${workspaceFolder}",
+            "remoteRoot": "${workspaceFolder}"
+        }
+    ]
+}</code></pre>
+                    </div>
+                </div>
+
+                <!-- Slide 16: Conclusion -->
+                <div class="slide">
+                    <h2 class="text-2xl font-bold mb-4">Conclusion: The Future is Collaborative</h2>
+                    <p class="mb-4">The workflow detailed here—combining context engineering, iterative refinement, and AI-assisted debugging—represents a paradigm shift in creative technology.</p>
+                    <p class="mb-4">Tools like the Gemini CLI are not replacements for artists but powerful <strong>agentic partners</strong>. They augment human creativity by automating tedious tasks and accelerating complex workflows.</p>
+                    <p>By mastering these new conversational and iterative development models, you can focus your energy on what truly matters: the core creative and strategic challenges of your work.</p>
+                </div>
+
+            </div>
+        </main>
+        
+        <footer class="mt-6">
+            <div class="flex justify-between items-center">
+                <button id="prev-btn" class="bg-white hover:bg-slate-100 text-slate-700 font-semibold py-2 px-4 border border-slate-300 rounded-lg shadow-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Previous</button>
+                <div class="flex-grow mx-4">
+                    <div class="progress-bar">
+                        <div id="progress-bar-inner" class="progress-bar-inner"></div>
+                    </div>
+                     <p id="progress-text" class="text-center text-sm text-slate-500 mt-1">Step 1 / 16</p>
+                </div>
+                <button id="next-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors disabled:opacity-50">Next</button>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const progressText = document.getElementById('progress-text');
+            const progressBarInner = document.getElementById('progress-bar-inner');
+            const copyButtons = document.querySelectorAll('.copy-btn');
+
+            let currentSlide = 0;
+            const totalSlides = slides.length;
+
+            function showSlide(index) {
+                slides.forEach((slide, i) => {
+                    slide.classList.toggle('active', i === index);
+                });
+                currentSlide = index;
+                updateControls();
+            }
+
+            function updateControls() {
+                // Update button states
+                prevBtn.disabled = currentSlide === 0;
+                nextBtn.disabled = currentSlide === totalSlides - 1;
+
+                // Update progress text and bar
+                const progressPercentage = ((currentSlide + 1) / totalSlides) * 100;
+                progressText.textContent = `Step ${currentSlide + 1} / ${totalSlides}`;
+                progressBarInner.style.width = `${progressPercentage}%`;
+            }
+
+            prevBtn.addEventListener('click', () => {
+                if (currentSlide > 0) {
+                    showSlide(currentSlide - 1);
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                if (currentSlide < totalSlides - 1) {
+                    showSlide(currentSlide + 1);
+                }
+            });
+
+            copyButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const codeBlock = button.nextElementSibling;
+                    const code = codeBlock.innerText;
+                    
+                    // Create a temporary textarea element to copy the text
+                    const textArea = document.createElement('textarea');
+                    textArea.value = code;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    try {
+                        document.execCommand('copy');
+                        button.textContent = 'Copied!';
+                        setTimeout(() => {
+                            button.textContent = 'Copy';
+                        }, 2000);
+                    } catch (err) {
+                        console.error('Failed to copy text: ', err);
+                        button.textContent = 'Error';
+                    }
+                    document.body.removeChild(textArea);
+                });
+            });
+
+            // Initialize the first slide
+            showSlide(0);
+        });
+    </script>
+
+</body>
+</html>
